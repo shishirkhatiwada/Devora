@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Devora
 
 A modern, AI-powered code editor built with **Next.js**, powered by **Claude 4**, and designed with a **VS Code–like interface**.
