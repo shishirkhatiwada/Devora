@@ -1,37 +1,46 @@
 "use client";
 
 import { Poppins } from "next/font/google";
+import { SparkleIcon } from "lucide-react";
+import { FaGithub } from "react-icons/fa";
+import {
+  adjectives,
+  animals,
+  colors,
+  uniqueNamesGenerator,
+} from "unique-names-generator";
+import { useEffect, useState } from "react";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { SparkleIcon } from "lucide-react";
 import { Kbd } from "@/components/ui/kbd";
-import { FaGithub } from "react-icons/fa";
-import ProjectList from "./project-list";
-import { useCreateProject } from "../hooks/use-project";
 
-
-
-import {adjectives, animals, colors, uniqueNamesGenerator} from 'unique-names-generator';
-import { useEffect, useState } from "react";
 import { ProjectsCommandDialog } from "./projects-command-dialog";
-
+import { ImportGithubDialog } from "./import-github-dialog";
+import { useCreateProject } from "../hooks/use-project";
+import { ProjectsList } from "./project-list";
 
 const font = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-});
+  weight: ["400", "500", "600", "700"],
+})
 
-const ProjectView = () => {
+export const ProjectsView = () => {
   const createProject = useCreateProject();
 
-  const [CommandDialogOpen, setCommandDialogOpen] = useState(false);
+  const [commandDialogOpen, setCommandDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
-    useEffect(() => {
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey) {
         if (e.key === "k") {
           e.preventDefault();
           setCommandDialogOpen(true);
+        }
+        if (e.key === "i") {
+          e.preventDefault();
+          setImportDialogOpen(true);
         }
       }
     }
@@ -39,72 +48,92 @@ const ProjectView = () => {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
+
   return (
     <>
-    <ProjectsCommandDialog open={CommandDialogOpen} onOpenChange={setCommandDialogOpen} />
-    <div className="min-h-screen bg-sidebar flex flex-col items-center justify-center p-6 md:p-16">
-      <div className="w-full max-w-sm mx-auto flex flex-col gap-4 items-center">
-        <div className="flex items-center gap-2 w-full group/logo">
-          <img
-            src="/vercel.svg"
-            alt="devora"
-            className="size-[32px] md:size-[46px"
-          />
-          <h1
-            className={cn(
-              "relative inline-block text-3xl md:text-5xl font-bold text-foreground after:absolute after:left-0 after:-bottom-2 after:h-[3px] after:w-full after:bg-primary after:rounded-full after:shadow-[0_0_10px_hsl(var(--primary))]",
-              font.className,
-            )}
-          >
-            Devaura
-          </h1>
-        </div>
+      <ProjectsCommandDialog
+        open={commandDialogOpen}
+        onOpenChange={setCommandDialogOpen}
+      />
+      <ImportGithubDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+      />
+      <div className="min-h-screen bg-sidebar flex flex-col items-center justify-center p-6 md:p-16">
+        <div className="w-full max-w-sm mx-auto flex flex-col gap-4 items-center">
 
-        <div className="flex flex-col gap-4 w-full">
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              onClick={()=>{
-                const projectName = uniqueNamesGenerator({
-                    dictionaries: [adjectives, colors, animals],
-                    separator: ' ',
-                    style: 'capital',
-                    length: 3
-                });
-                createProject({
-                    name: projectName
-                })
-              }}
-              className="h-full items-start justify-start p-4 bg-background border flex flex-col gap-6 rounded-none"
-            >
-              <div className="flex items-center justify-between">
-                <SparkleIcon className="size-4" />
-                <Kbd className="ml-2">⌨J </Kbd>
-              </div>
-              <div>
-                <span className="text-sm">New</span>
-              </div>
-            </Button>
+          <div className="flex justify-between gap-4 w-full items-center">
 
-            <Button
-              variant="outline"
-              className="h-full items-start justify-start p-4 bg-background border flex flex-col gap-6 rounded-none"
-            >
-              <div className="flex items-center justify-between">
-                <FaGithub className="size-4" />
-                <Kbd className="ml-2">⌨ I </Kbd>
-              </div>
-              <div>
-                <span className="text-sm">Import</span>
-              </div>
-            </Button>
+            <div className="flex items-center gap-2 w-full group/logo">
+              <img src="/logo.svg" alt="Devora" className="size-[32px] md:size-[46px]" />
+              <h1 className={cn(
+                "text-4xl md:text-5xl font-semibold",
+                font.className,
+              )}>
+                Devora
+              </h1>
+            </div>
+
           </div>
-          <ProjectList onViewAll={() =>setCommandDialogOpen(true)} />
+
+          <div className="flex flex-col gap-4 w-full">
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  const projectName = uniqueNamesGenerator({
+                    dictionaries: [
+                      adjectives,
+                      animals,
+                      colors,
+                    ],
+                    separator: "-",
+                    length: 3,
+                  });
+
+                  createProject({
+                    name: projectName,
+                  });
+                }}
+                className="h-full items-start justify-start p-4 bg-background border flex flex-col gap-6 rounded-none"
+              >
+                <div className="flex items-center justify-between w-full">
+                  <SparkleIcon className="size-4" />
+                  <Kbd className="bg-accent border">
+                    ⌘J
+                  </Kbd>
+                </div>
+                <div>
+                  <span className="text-sm">
+                    New
+                  </span>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setImportDialogOpen(true)}
+                className="h-full items-start justify-start p-4 bg-background border flex flex-col gap-6 rounded-none"
+              >
+                <div className="flex items-center justify-between w-full">
+                  <FaGithub className="size-4" />
+                  <Kbd className="bg-accent border">
+                    ⌘I
+                  </Kbd>
+                </div>
+                <div>
+                  <span className="text-sm">
+                    Import
+                  </span>
+                </div>
+              </Button>
+            </div>
+
+            <ProjectsList onViewAll={() => setCommandDialogOpen(true)} />
+
+          </div>
+
         </div>
       </div>
-    </div>
     </>
   );
 };
-
-export default ProjectView;

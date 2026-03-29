@@ -208,7 +208,7 @@ export const ConversationSidebar = ({
           >
             <PromptInputBody>
               <PromptInputTextarea
-                placeholder="Ask Polaris anything..."
+                placeholder="Ask Devora anything..."
                 onChange={(e) => setInput(e.target.value)}
                 value={input}
                 disabled={isProcessing}
