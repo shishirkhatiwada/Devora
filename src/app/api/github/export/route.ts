@@ -14,10 +14,16 @@ const requestSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const { userId } = await auth();
+  const { userId, has } = await auth();
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const hasPro = has({ plan: "pro" });
+
+  if (!hasPro) {
+    return NextResponse.json({ error: "Pro plan required" }, { status: 403 });
   }
 
   const body = await request.json();
@@ -34,7 +40,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const internalKey = process.env.CONVEX_INTERNAL_KEY;
+  const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
 
   if (!internalKey) {
     return NextResponse.json(

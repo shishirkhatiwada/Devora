@@ -11,7 +11,6 @@ import {
   CommandList,
 } from "@/components/ui/command";
 
-
 import { Doc } from "../../../../convex/_generated/dataModel";
 import { useProjects } from "../hooks/use-project";
 
@@ -20,22 +19,22 @@ interface ProjectsCommandDialogProps {
   onOpenChange: (open: boolean) => void;
 };
 
-const getProjectIcon = (project : Doc<"projects">) => {
-    if(project.importStatus === "imported"){
-        return <FaGithub className="size-4 text-muted-foreground"/>
-    }
+const getProjectIcon = (project: Doc<"projects">) => {
+  if (project.importStatus === "completed") {
+    return <FaGithub className="size-4 text-muted-foreground" />
+  }
 
-      if(project.importStatus === "failed"){
-        return <AlertCircleIcon className="size-4 text-muted-foreground"/>
-    }
+  if (project.importStatus === "failed") {
+    return <AlertCircleIcon className="size-4 text-muted-foreground" />;
+  }
 
-      if(project.importStatus === "importing"){
-        return <Loader2Icon className="size-4 text-muted-foregroun animate-spin"/>
-    }
-    // You can customize this function to return different icons based on project properties
+  if (project.importStatus === "importing") {
+    return (
+      <Loader2Icon className="size-4 text-muted-foreground animate-spin" />
+    );
+  }
 
-    return <GlobeIcon className="size-4 text-muted-foreground"/>;
-    
+  return <GlobeIcon className="size-4 text-muted-foreground" />;
 }
 
 export const ProjectsCommandDialog = ({
